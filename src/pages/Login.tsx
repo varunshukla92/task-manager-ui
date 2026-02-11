@@ -1,19 +1,71 @@
-import { useAuth } from "../auth/AuthContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
+import { loginApi } from "../auth/auth.service";
+import { Container, Card, Form, Button, Alert } from "react-bootstrap";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    login();
-    navigate("/tasks");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await loginApi({ email, password });
+      login(response.accessToken);
+      navigate("/tasks");
+    } catch {
+      setError("Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <h2>Login Page</h2>
-      <button onClick={handleLogin}>Login</button>
-    </div>
+    <Container className="d-flex justify-content-center align-items-center vh-100">
+      <Card style={{ width: "350px" }} className="shadow">
+        <Card.Body>
+          <h3 className="text-center mb-4">Login</h3>
+
+          {error && <Alert variant="danger">{error}</Alert>}
+
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Form.Group>
+
+            <Button
+              variant="primary"
+              className="w-100"
+              onClick={handleLogin}
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 }
