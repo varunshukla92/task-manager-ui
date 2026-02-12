@@ -29,8 +29,9 @@ export default function Login() {
   };
 
   return (
-    <Container className="d-flex justify-content-center align-items-center vh-100">
-      <Card style={{ width: "350px" }} className="shadow">
+    <Container className="d-flex flex-column align-items-center vh-100">
+      <h1>Task Management System</h1>
+      <Card style={{ width: "350px", marginTop: "10%" }} className="shadow">
         <Card.Body>
           <h3 className="text-center mb-4">Login</h3>
 
