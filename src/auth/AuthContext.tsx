@@ -1,6 +1,6 @@
-import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
-import { setAuthToken } from "../services/httpClient";
+import { createContext, useContext, useState, useEffect } from "react";
+import { type ReactNode } from "react";
+import { setAuthToken, setUnauthorizedHandler } from "../services/httpClient";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -22,6 +22,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setAuthToken(null);
     setIsAuthenticated(false);
   };
+
+  // 🔒 Register 401 handler once
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      logout();
+    });
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
