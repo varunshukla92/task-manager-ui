@@ -4,9 +4,14 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 const apimKey = import.meta.env.VITE_APIM_AUTH_SUBSCRIPTION_KEY;
 
 let authToken: string | null = null;
+let onUnauthorized: (() => void) | null = null;
 
 export const setAuthToken = (token: string | null) => {
   authToken = token;
+};
+
+export const setUnauthorizedHandler = (handler: () => void) => {
+  onUnauthorized = handler;
 };
 
 const httpClient = axios.create({
@@ -58,6 +63,14 @@ httpClient.interceptors.response.use(
 
     // If retry count is not set yet, start at 0
     config.__retryCount = config.__retryCount || 0;
+
+    // 🔒 Handle 401 Unauthorized
+    if (error.response?.status === 401) {
+      if (onUnauthorized) {
+        onUnauthorized();
+      }
+      return Promise.reject(error);
+    }
 
     // Decide if this error is worth retrying:
     const shouldRetry =
