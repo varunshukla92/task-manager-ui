@@ -1,7 +1,6 @@
 import axios, { type InternalAxiosRequestConfig, type AxiosError } from "axios";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
-const apimKey = import.meta.env.VITE_APIM_AUTH_SUBSCRIPTION_KEY;
 
 let authToken: string | null = null;
 let onUnauthorized: (() => void) | null = null;
@@ -27,10 +26,6 @@ const httpClient = axios.create({
 
 httpClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (apimKey) {
-      config.headers["Ocp-Apim-Subscription-Key"] = apimKey;
-    }
-
     if (authToken) {
       config.headers.Authorization = `Bearer ${authToken}`;
     }
