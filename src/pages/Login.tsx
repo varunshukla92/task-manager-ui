@@ -29,7 +29,7 @@ export default function Login() {
   };
 
   return (
-    <Container className="d-flex flex-column align-items-center vh-100">
+    <Container className="d-flex flex-column align-items-center">
       <h1>Task Management System</h1>
       <Card style={{ width: "350px", marginTop: "10%" }} className="shadow">
         <Card.Body>

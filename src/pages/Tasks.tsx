@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Spinner, Alert, Table } from "react-bootstrap";
-import { getTasks } from "../services/task.service";
+import { Spinner, Alert, Table, Button } from "react-bootstrap";
+import { getTasks, deleteTask } from "../services/task.service";
 import { type Task } from "../types/task";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const fetchTasks = async () => {
     try {
@@ -15,10 +16,23 @@ const Tasks = () => {
 
       const data = await getTasks();
       setTasks(data);
-    } catch (err: any) {
+    } catch {
       setError("Failed to load tasks.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      setDeletingId(id);
+
+      await deleteTask(id);
+      setTasks((prev) => prev.filter((task) => task.id !== id));
+    } catch {
+      alert("Failed to delete task.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -34,7 +48,7 @@ const Tasks = () => {
     return <Alert variant="danger">{error}</Alert>;
   }
 
-  if (!loading && tasks.length === 0) {
+  if (!tasks.length) {
     return <Alert variant="info">No tasks found.</Alert>;
   }
 
@@ -45,9 +59,7 @@ const Tasks = () => {
           <th>Title</th>
           <th>Description</th>
           <th>Status</th>
-          <th>Priority</th>
-          <th>DueDate</th>
-          <th>CreatedAt</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -56,9 +68,16 @@ const Tasks = () => {
             <td>{task.title}</td>
             <td>{task.description}</td>
             <td>{task.status}</td>
-            <td>{task.priority}</td>
-            <td>{task.dueDate}</td>
-            <td>{task.createdAt}</td>
+            <td>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={() => handleDelete(task.id)}
+                disabled={deletingId === task.id}
+              >
+                {deletingId === task.id ? "Deleting..." : "Delete"}
+              </Button>
+            </td>
           </tr>
         ))}
       </tbody>
