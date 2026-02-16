@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Spinner, Alert, Table, Button } from "react-bootstrap";
 import { getTasks, deleteTask } from "../services/task.service";
+import { getPriorityLabel, getStatusLabel } from "../utils/common";
 import { type Task } from "../types/task";
 
 const Tasks = () => {
@@ -58,7 +59,9 @@ const Tasks = () => {
         <tr>
           <th>Title</th>
           <th>Description</th>
+          <th>Priority</th>
           <th>Status</th>
+          <th>Created On</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -67,7 +70,9 @@ const Tasks = () => {
           <tr key={task.id}>
             <td>{task.title}</td>
             <td>{task.description}</td>
-            <td>{task.status}</td>
+            <td>{getPriorityLabel(task.priority)}</td>
+            <td>{getStatusLabel(task.status)}</td>
+            <td>{new Date(task.createdAt).toLocaleString("en-Us")}</td>
             <td>
               <Button
                 variant="danger"
