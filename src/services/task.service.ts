@@ -9,5 +9,5 @@ export const getTasks = async (): Promise<Task[]> => {
 };
 
 export const deleteTask = async (id: string): Promise<void> => {
-  await httpClient.delete("/tasks/api/v1/tasks/${id}");
+  await httpClient.delete(`/tasks/api/v1/tasks/${id}`);
 };
