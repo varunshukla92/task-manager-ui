@@ -8,13 +8,15 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps) {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+
+  const isAdmin = user?.role === "Admin";
 
   return (
     <>
@@ -24,14 +26,30 @@ export default function Layout({ children }: LayoutProps) {
             <Navbar.Brand as={Link} to="/tasks">
               Mini Jira
             </Navbar.Brand>
+
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/tasks">
-                Tasks
+                Task List
               </Nav.Link>
+
+              <Nav.Link as={Link} to="/tasks/create">
+                Create Task
+              </Nav.Link>
+
+              {isAdmin && (
+                <Nav.Link as={Link} to="/admin/users">
+                  Manage Users
+                </Nav.Link>
+              )}
             </Nav>
-            <Button variant="outline-light" onClick={handleLogout}>
-              Logout
-            </Button>
+
+            <Nav className="ms-auto align-items-center">
+              {user && <span className="text-white me-3">{user.email}</span>}
+
+              <Button variant="outline-light" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Nav>
           </Container>
         </Navbar>
       )}
